@@ -18,7 +18,7 @@ class ApiError extends Error{
     }
 
     static noAuth(){
-        return new ApiError(401, "Пользователь не авторизован");
+        return new ApiError(401, "The user is not logged in");
     }
 }
 

@@ -18,12 +18,14 @@ class UserController {
         let  {login, password, role} = req.body;
         
         if (!login || !password) {
-            return next(ApiError.badRequest("Проверьте все поля"));
+            req.log.warn("Empty fields received");
+            return next(ApiError.badRequest("Check all fields"));
         }
         const candidate = await User.findOne({where: {login}});
 
         if (candidate) {
-            return next(ApiError.badRequest("Пользователь с таким логином уже существует"));
+            req.log.warn("User with same username already exists");
+            return next(ApiError.badRequest("User with login already exists"));
         }
 
         password = await bcrypt.hash(password, 5);
@@ -38,14 +40,16 @@ class UserController {
         const user = await User.findOne({where: {login}});
         
         if (!user){
-            return next(ApiError.internal("Неверный логин или пароль"));
+            req.log.warn("User not found")
+            return next(ApiError.internal("User not found"));
         }
 
         let comparePassword = bcrypt.compareSync(password, user.password);
         if (!comparePassword) {
-            return next(ApiError.internal("Неверный логин или пароль"));
+            req.log.warn("The user entered an incorrect password");
+            return next(ApiError.internal("Entered an incorrect password"));
         }
-
+        
         const token = generateJwt(user.id_user, user.login, user.role);
         return res.json({token});
     }

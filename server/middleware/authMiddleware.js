@@ -9,6 +9,7 @@ module.exports = function(req, res, next) {
         const token = req.headers.authorization.split(' ')[1];
 
         if (!token) {
+            req.log.warn('The user is not logged in');
             return next(ApiError.noAuth());
         }
 
