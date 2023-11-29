@@ -29,7 +29,7 @@ class UserController {
         }
 
         password = await bcrypt.hash(password, 5);
-        const user = await User.create({login, password, 'role': role || 'CONSIERGE'});
+        const user = await User.create({login, password, 'role': role || 'CONSIERGE', 'active': 1});
         const token = generateJwt(user.id_user, user.login, user.role);
 
         return res.json({token});
@@ -41,13 +41,13 @@ class UserController {
         
         if (!user){
             req.log.warn("User not found")
-            return next(ApiError.internal("User not found"));
+            return next(ApiError.internal("Invalid username or password"));
         }
 
         let comparePassword = bcrypt.compareSync(password, user.password);
         if (!comparePassword) {
             req.log.warn("The user entered an incorrect password");
-            return next(ApiError.internal("Entered an incorrect password"));
+            return next(ApiError.internal("Invalid username or password"));
         }
         
         const token = generateJwt(user.id_user, user.login, user.role);

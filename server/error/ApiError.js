@@ -20,6 +20,10 @@ class ApiError extends Error{
     static noAuth(){
         return new ApiError(401, "The user is not logged in");
     }
+
+    static unexpectedError() {
+        return new ApiError(500, "Unexpected error");
+    }
 }
 
 module.exports = ApiError;
